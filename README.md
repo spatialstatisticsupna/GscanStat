@@ -15,6 +15,7 @@ This repository contains the R code and examples to fit the models described in 
 R code to fit the following spatio-temporal disease mapping models:
 - SaTScan model (Kulldorff, 2021)
 - GscanStat model (Santafe et al., 2025)
+  
 has been included [here](https://github.com/spatialstatisticsupna/GscanStat_article/tree/main/R).
 
 The [BigDM](https://github.com/spatialstatisticsupna/bigDM) library is used to fit spatio-temporal models. Additionally, the divide-and-conquer approach (Orozco-Acosta et al., 2023) implemented in the [BigDM](https://github.com/spatialstatisticsupna/bigDM) library is used when dealing with large risk maps.
