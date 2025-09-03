@@ -2,21 +2,22 @@
 
 This repository contains the R code and examples to fit the models described in the paper entitled "Improving Disease Risk Estimation in Small Areas by Accounting for Spatio-Temporal Local Discontinuities" (Santafé et al., 2025)
 
-## Table of contents
-- [R code - GsacanStat algorithm](#R-code)
-- [R code - Example](#Example)
+## Table of Contents
+- [R Code - GscanStat algorithm](#R-code)
+- [R Code - Example](#Example)
+- [Acknowledgements - Example](#Example)
 - [References](#References)
 
 
 
 
 # R code
-R code to fit the following spatial disease mapping models
-- SaTScan model (Leroux et al., 1999)
-- GsacanStat model (Santafe et al., 2025)
-  has been included [here](https://github.com/spatialstatisticsupna/DBSC_article/blob/master/R/).
+R code to fit the following spatio-temporal disease mapping models:
+- SaTScan model (Kulldorff, 2021)
+- GscanStat model (Santafe et al., 2025)
+has been included [here](https://github.com/spatialstatisticsupna/DBSC_article/blob/master/R/).
 
-[BigDM](https://github.com/spatialstatisticsupna/bigDM) library is used to fit spatio-temporal models. Additionally, a divide-and-conquer approach (Orozco-Acosta et al., 2023) implemented in the [BigDM](https://github.com/spatialstatisticsupna/bigDM) library is used when dealing with large risk maps.
+The [BigDM](https://github.com/spatialstatisticsupna/bigDM) library is used to fit spatio-temporal models. Additionally, the divide-and-conquer approach (Orozco-Acosta et al., 2023) implemented in the [BigDM](https://github.com/spatialstatisticsupna/bigDM) library is used when dealing with large risk maps.
 
 # Example
 An example to fit SaTScan and GscanStat models using a simulated spatio-temporal risk map for the autonomous community of Navarre (Spain) has been included [here](https://github.com/spatialstatisticsupna/DBSC_article/blob/master/R/).
