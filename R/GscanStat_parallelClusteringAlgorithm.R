@@ -345,7 +345,7 @@ getClusters.SpatioTemporalScanStat.greedy_Parallel <- function(data,
             cl <- makeCluster(maxCPUs, type = "FORK")
             registerDoParallel(cl)
           }else{
-            # if using a not-Linux sistem we need to use PSOCK clusters - less efficient
+            # if using a no-Linux system we need to use PSOCK clusters - less efficient
             cl <- makeCluster(maxCPUs, type = "PSOCK")
             registerDoParallel(cl)
             # export functions
