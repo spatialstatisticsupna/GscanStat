@@ -12,13 +12,15 @@ This repository contains the R code and examples to fit the models described in 
 
 
 # R code
-R code to fit the following spatio-temporal disease mapping models:
+R code to fit the following spatio-temporal disease mapping models is provided:
 - SaTScan model (Kulldorff, 2021)
-- GscanStat model (Santafe et al., 2025)
+- GscanStat model (Santafé et al., 2025)
   
-has been included [here](https://github.com/spatialstatisticsupna/GscanStat_article/tree/main/R).
+The code can be found [here](https://github.com/spatialstatisticsupna/GscanStat_article/tree/main/R).
 
-The [BigDM](https://github.com/spatialstatisticsupna/bigDM) library is used to fit spatio-temporal models. Additionally, the divide-and-conquer approach (Orozco-Acosta et al., 2023) implemented in the [BigDM](https://github.com/spatialstatisticsupna/bigDM) library is used when dealing with large risk maps.
+The [BigDM](https://github.com/spatialstatisticsupna/bigDM) package is used to fit spatio-temporal models. In addition, the divide-and-conquer approach (Orozco-Acosta et al., 2023) implemented in the [BigDM](https://github.com/spatialstatisticsupna/bigDM) package is applied when dealing with large risk maps.  
+
+The file [satScan_auxFunctions.R](https://github.com/spatialstatisticsupna/GscanStat_article/blob/main/R/satScan_auxFunctions.R) provides auxiliary functions to run the SaTScan software within the simulation experiments described in the paper *"Improving Disease Risk Estimation in Small Areas by Accounting for Spatio-Temporal Local Discontinuities"*. These functions can only be used with simulated data, since they do not implement internal age and sex standardization. They are not intended as general-purpose code for using SaTScan outside the simulated experiments presented in the paper.
 
 # Examples
 Two examples are provided [here](https://github.com/spatialstatisticsupna/GscanStat_article/tree/main/R):
