@@ -1,8 +1,3 @@
-library(purrr)
-library(sf)
-library(tidyverse)
-library(rsatscan)
-
 #' Runs SaTScan clustering on a spatio-temporal dataset.
 #'
 #' This function prepares the necessary files and configurations to execute a
@@ -14,10 +9,10 @@ library(rsatscan)
 #' Spatio-Temporal Local Discontinuities". They are not intended as 
 #' general-purpose code for using SaTScan in other contexts.
 #'
-#' @param datos A data frame containing the spatio-temporal data. It must
+#' @param data A data frame containing the spatio-temporal data. It must
 #'   include the following columns:
 #'   \itemize{
-#'     \item \strong{muni}: A character vector with municipality codes.
+#'     \item \strong{ID}: A character vector with municipality codes.
 #'     \item \strong{year}: An integer vector representing the year.
 #'     \item \strong{sim}: An integer vector indicating the simulation number
 #'       (optional).
@@ -28,10 +23,8 @@ library(rsatscan)
 #'   }
 #' @param carto An object containing the cartographic information (e.g.,
 #'   municipality coordinates and polygons) required by SaTScan.
-#' @param i.sim An optional integer specifying the simulation number to be
-#'   processed. Defaults to `NULL`.
 #'
-#' @return An objecto with the SaTScan output as provided by function `satscan`
+#' @return An object with the SaTScan output as provided by function `satscan`
 #' from the `rsatscan` package.
 #'
 #' @details The main purpose of this function is to automate the preparation of
@@ -44,30 +37,28 @@ library(rsatscan)
 #'
 #' @examples
 #' # Assuming 'my_data' and 'my_carto' are prepared
-#' # run_SatScan(datos = my_data, carto = my_carto)
-run_SatScan <- function(datos, carto, i.sim = NULL) {
+#' # run_SatScan(data = my_data, carto = my_carto)
+run_satScan <- function(data, carto, sslocation=NULL, ssbatchfilename=NULL) {
+  
   carto <- st_as_sf(carto)
+  
   # We transform the projection of the object to obtain lon/lat
-  carto <- st_transform(carto, crs="+proj=longlat +datum=WGS84")
-  carto$long <- st_coordinates(st_centroid(carto))[,1]
-  carto$lat <- st_coordinates(st_centroid(carto))[,2]
-
-  # If there are multiple simulations in the dataset, we select the given simulation
-  if(!is.null(i.sim)){
-    datos <- datos %>% filter(sim==i.sim) %>% mutate(year = 2000+ year)
+  if(st_crs(carto) != st_crs(4326)){
+    carto <- st_transform(carto, crs="+proj=longlat +datum=WGS84")
+    carto$long <- st_coordinates(st_centroid(carto))[,1]
+    carto$lat <- st_coordinates(st_centroid(carto))[,2]
   }
-
-
-  datos.geo <- data.frame(muni=carto$muni, lat=carto$lat, long=carto$long)
-  datos.cas <- datos %>% select(muni,obs,year)
-  datos.pop <- datos %>% select(muni,year,pop)
+  
+  data.geo <- data.frame(ID=carto$ID, lat=carto$lat, long=carto$long)
+  data.cas <- data %>% select(ID,obs,year)
+  data.pop <- data %>% select(ID,year,pop)
 
   td = tempfile(pattern = "auxDir_satScan", tmpdir = "./")
   dir.create(td, recursive = TRUE)
 
-  write.cas(datos.cas,td,"auxSaTScanFile")
-  write.geo(datos.geo,td,"auxSaTScanFile")
-  write.pop(datos.pop,td,"auxSaTScanFile")
+  write.cas(data.cas,td,"auxSaTScanFile")
+  write.geo(data.geo,td,"auxSaTScanFile")
+  write.pop(data.pop,td,"auxSaTScanFile")
 
   # write options
   # If the error "Error in ss.options(reset = TRUE) : object 'ssenv' not found" occurs, it means that
@@ -79,7 +70,7 @@ run_SatScan <- function(datos, carto, i.sim = NULL) {
   }
 
 
-  years <- sort(unique(datos.cas$year))
+  years <- sort(unique(data.cas$year))
 
   invisible(ss.options(reset=TRUE))
   ss.options(list(CaseFile="auxSaTScanFile.cas",
@@ -91,15 +82,20 @@ run_SatScan <- function(datos, carto, i.sim = NULL) {
                   AnalysisType=3, # retorsprospective space-time
                   ScanAreas=3,  # hight and low risk
                   MaxSpatialSizeInPopulationAtRisk=50, # max spatial size 50% of population at risk (default and maximum allowed value)
-                  MaxTemporalSizeInterpretation=0,MaxTemporalSize=90 # temporal size % of time periods (max allowed 90%)
+                  MaxTemporalSizeInterpretation=0,
+                  MaxTemporalSize=90 # temporal size % of time periods (max allowed 90%)
                   ))
   ss.options(c("NonCompactnessPenalty=0", "ReportGiniClusters=n", "LogRunToHistoryFile=n"))
 
   write.ss.prm(td,"auxSatScanFile")
   
+  if(is.null(sslocation)) sslocation <- "/usr/local/bin/"
+  if(is.null(ssbatchfilename)) ssbatchfilename <- "SaTScanBatch64"
 
-  satScan_obj <- satscan(prmlocation=td, prmfilename="auxSatScanFile",
-                         sslocation="/usr/local/bin/", ssbatchfilename="satscan",
+  satScan_obj <- satscan(prmlocation=td,
+                         prmfilename="auxSatScanFile",
+                         sslocation=sslocation,
+                         ssbatchfilename="SaTScanBatch64",
                          verbose=FALSE)
 
   ## delete the temporary directory
@@ -134,7 +130,7 @@ run_SatScan <- function(datos, carto, i.sim = NULL) {
 #' # cluster_matrix <- get_clusterIDs_satScan(
 #' #   satScanResult,
 #' #   pVal.threshold = 0.05)
-get_clusterIDs_satScan <- function(satScanOutput, pVal.threshold=0.05){
+get_clusterIDs_satScan <- function(satScanOutput, carto, pVal.threshold=0.05){
   
   # compute the number of areas (spatial dimension)
     nAreas <- nrow(satScanOutput$rr)  
@@ -173,7 +169,7 @@ get_clusterIDs_satScan <- function(satScanOutput, pVal.threshold=0.05){
   
   clustering_IDMatrix_satScan <- NULL
   for(clust.i in 1:nClust){
-    index_clust.i <- spatialCluster %>% filter(CLUSTER==clust.i) %>% select(LOC_ID) %>% pull() %>% match(as.numeric(carto$muni))
+    index_clust.i <- spatialCluster %>% filter(CLUSTER==clust.i) %>% select(LOC_ID) %>% pull() %>% match(as.numeric(carto$ID))
     clust <- numeric(nAreas)
     clust[index_clust.i] <- clust.i
     

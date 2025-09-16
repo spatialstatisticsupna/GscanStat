@@ -1,41 +1,68 @@
 # Greedy Scan Statistic (GscanStat) algorithm
 
-This repository contains the R code and examples to fit the models described in the paper entitled "Improving Disease Risk Estimation in Small Areas by Accounting for Spatio-Temporal Local Discontinuities" (Santafé et al., 2025)
+This repository contains the R code for implementing the GscanStat clustering algorithm and reproducing the results from the case study described in the paper *“Improving Disease Risk Estimation in Small Areas by Accounting for Spatio-Temporal Local Discontinuities”* (Santafé et al., 2025).
 
 ## Table of Contents
-- [R Code - GscanStat algorithm](#R-code)
-- [R Code - Example](#Examples)
-- [Acknowledgements - Example](#Example)
-- [References](#References)
 
+-   [Data](#data)
+-   [R code](#r-code)
+-   [Acknowledgements](#Acknowledgements)
+-   [References](#References)
 
+# Data {#data}
 
+Overall cancer (all sites) mortality data for the male population in continental Spain (excluding the Balearic and Canary Islands) are provided. The data are aggregated into 3-year periods spanning 1999–2022 (i.e., 1999–2001, 2002–2004, …, 2020–2022).
 
-# R code
-R code to fit the following spatio-temporal disease mapping models is provided:
-- SaTScan model (Kulldorff, 2021)
-- GscanStat model (Santafé et al., 2025)
-  
-The code can be found [here](https://github.com/spatialstatisticsupna/GscanStat_article/tree/main/R).
+In addition, to avoid introducing substantial variability that could hinder the performance of the GscanStat algorithm in detecting clusters, neighboring municipalities were aggregated (while respecting the administrative boundaries of the Autonomous Communities) until each resulting spatial unit contained at least 16 observed cases over the entire study period.
 
-The [BigDM](https://github.com/spatialstatisticsupna/bigDM) package is used to fit spatio-temporal models. In addition, the divide-and-conquer approach (Orozco-Acosta et al., 2023) implemented in the [BigDM](https://github.com/spatialstatisticsupna/bigDM) package is applied when dealing with large risk maps.  
+The [**DataSpain_Cancer.Rdata**](https://github.com/spatialstatisticsupna/GscanStat/blob/master/Data/DataSpain_Cancer.Rdata) file contains both the data and the cartographic information corresponding to the final configuration, which comprises 2.470 regions.
 
-The file [satScan_auxFunctions.R](https://github.com/spatialstatisticsupna/GscanStat_article/blob/main/R/satScan_auxFunctions.R) provides auxiliary functions to run the SaTScan software within the simulation experiments described in the paper *"Improving Disease Risk Estimation in Small Areas by Accounting for Spatio-Temporal Local Discontinuities"*. These functions can only be used with simulated data, since they do not implement internal age and sex standardization. They are not intended as general-purpose code for using SaTScan outside the simulated experiments presented in the paper.
+This .Rdata file contains the following objects:
 
-# Examples
-Two examples are provided [here](https://github.com/spatialstatisticsupna/GscanStat_article/tree/main/R):
+-   `carto`: `sf` object containing the polygon geometries of the spatial units
 
-* The first example corresponds to a small-scale problem where the SaTScan and GscanStat models are fitted using a simulated spatio-temporal risk map for the autonomous community of Navarre (Spain) at the municipality level (265 municipalities). The [example_GscanStat_Navarre.R](https://github.com/spatialstatisticsupna/GscanStat_article/blob/main/R/example_GscanStat_Navarre.R) script provides this code and also includes examples of fitting spatio-temporal models using the divide-and-conquer approach.
-* The second example corresponds to a large-scale problem where the GscanStat model is fitted using a simulated spatio-temporal risk map for Spain. In this case, small neighboring municipalities are aggregated into supramunicipality areas, as described in the paper *"Improving Disease Risk Estimation in Small Areas by Accounting for Spatio-Temporal Local Discontinuities"* (Santafé et al., 2025), to mitigate the high variability observed in small municipalities with very low observed/expected death counts. The final map with aggregated areas consists of 2,470 areas. The [example_GscanStat_Spain.R](https://github.com/spatialstatisticsupna/GscanStat_article/blob/main/R/example_GscanStat_Spain_.R) script provides the code to fit spatio-temporal models using the divide-and-conquer approach.  
-  **WARNING:** Since this is a large-scale problem, the GscanStat algorithm may take a long time to obtain the final clustering partition. As a reference, the algorithm requires approximately 12.2 hours to compute the clustering partition on an Intel(R) Xeon(R) Silver 4316 processor with 80 CPUs at 2.30 GHz and 256 GB of RAM.
+-   `data`: `tibble` object with 19.760 rows and 5 columns
 
+    -   `ID`: character vector with the IDs of the spatial units
+    -   `year`: numeric vector representing the time period (1=1999-2001, ..., 8=2020-2022)
+    -   `obs`: observed number of cancer deaths
+    -   `exp`: expected number of cancer deaths (calculated using internal age-standardization)
+    -   `pop`: population at risk
 
-# Acknowledgements
-This work has been supported by the Spanish Ministry of Science and Innovation - State Research Agency (PID2020-113125RB-I00). 2021-2025
+# R code {#r-code}
 
-# References
-[Kulldorff, M (2001). Prospective time-periodic geographical disease surveillance using a scan statistic. Journal of the Royal Statistical Society, A164:61-72.](https://www.jstor.org/stable/pdf/2680534)
+[Here](https://github.com/spatialstatisticsupna/GscanStat/tree/main/R) we provide R code to fit the following spatio-temporal models:
 
-[Orozco-Acosta, E., Adin, A., and Ugarte, M.D. (2023). Big problems in spatio-temporal disease mapping: methods and software. Computer Methods and Programs in Biomedicine, 231, 107403.](https://doi.org/10.1016/j.cmpb.2023.107403)
+-   SaTScan model (Kulldorff, 2021)
 
-Santafé, G., Adin, A., and Ugarte, M.D. (2025). Improving Disease Risk Estimation in Small Areas by Accounting for Spatio-Temporal Local Discontinuities.
+-   GscanStat model (Santafé et al., 2025)
+
+The [`bigDM`](https://github.com/spatialstatisticsupna/bigDM) package is used to fit local spatio-temporal models through a divide-and-conquer strategy (Orozco-Acosta et al., 2023), incorporating the significant risk clustering structure identified by the GscanStat algorithm. Version 0.5.7 of `bigDM` has been developed specifically for this purpose.
+
+Two examples are provided:
+
+-   [Example1_GscanStat_Navarre.R](https://github.com/spatialstatisticsupna/GscanStat/tree/main/R/Example1_GscanStat_Navarre.R) illustrates a small-scale data analysis for the Autonomous Region of Navarre (58 areas across 8 time points). First, the GscanStat and SaTScan algorithms are applied to detect significant clusters. Subsequently, spatio-temporal models with BYM2 spatial prior, RW1 temporal prior and Type IV interaction are fitted to estimate relative risks.
+
+-   [Example2_GscanStat_Spain.R](https://github.com/spatialstatisticsupna/GscanStat/tree/main/R/Example2_GscanStat_Spain.R) demonstrates a large-scale data analysis for the entire Spanish regions (2.470 areas across 8 time points). First, the GscanStat and SaTScan algorithms are applied to detect significant clusters. Subsequently, local spatio-temporal models are fitted using the divide-and-conquer strategy implemented in the bigDM package to estimate relative risks.
+
+    **WARNING:** This analysis is computationally intensive. As a reference, obtaining the final clustering partition with the GscanStat algorithm takes approximately 12.2 hours on an Intel(R) Xeon(R) Silver 4316 processor with 80 CPUs at 2.30 GHz and 256 GB of RAM.
+
+Additional scripts:
+
+-   [GscanStat_parallelClusteringAlgorithm.R](https://github.com/spatialstatisticsupna/GscanStat/tree/main/R/GscanStat_parallelClusteringAlgorithm.R) contains the functions needed to run the Greedy Scan Statistics (GscanStat) algorithm for cluster detection.
+
+-   [SaTScan_auxFunctions.R](https://github.com/spatialstatisticsupna/GscanStat/tree/main/R/SaTScan_auxFunctions.R) provides auxiliary functions to running the SaTScan software via the `rsatscan` package.
+
+# Acknowledgements {#acknowledgements}
+
+This work has been supported by project PID2020-113125RB-I00/MCIN/AEI/10.13039/501100011033 (Spanish Ministry of Science and Innovation, AEI).
+
+![plot](https://github.com/spatialstatisticsupna/GscanStat/tree/main/miciu-aei.png)
+
+# References {#references}
+
+[Kulldorff, M (2001). Prospective time-periodic geographical disease surveillance using a scan statistic. *Journal of the Royal Statistical Society: Series A (Statistics in Society)*, 164, 61-72.](https://www.jstor.org/stable/pdf/2680534)
+
+[Orozco-Acosta, E., Adin, A., and Ugarte, M.D. (2023). Big problems in spatio-temporal disease mapping: methods and software. *Computer Methods and Programs in Biomedicine*, 231, 107403.](https://doi.org/10.1016/j.cmpb.2023.107403)
+
+Santafé, G., Adin, A., and Ugarte, M.D. (2025). Improving Disease Risk Estimation in Small Areas by Accounting for Spatio-Temporal Local Discontinuities. *arXiv preprint*.

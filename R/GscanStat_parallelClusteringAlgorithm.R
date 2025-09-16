@@ -1,15 +1,3 @@
-library(INLA)
-library(spdep)
-library(sp)
-library(RColorBrewer)
-library(parallel)
-library(foreach)
-library(doParallel)
-library(tidyverse)
-library(plyr)
-library(sf)
-library(tmap)
-
 #' Performs a GscanStat analysis to detect significant spatio-temporal clusters.
 #'
 #' This function serves as a wrapper to execute a complete GscanStat analysis. It
@@ -62,7 +50,8 @@ library(tmap)
 #' #   reps.mc = 99,
 #' #   verbose = TRUE
 #' # )
-run_GscanStat <- function(data, W, spatialWindow.maxSize, temporalWindow.maxSize, reps.mc, 
+run_GscanStat <- function(data, carto, W, 
+                          spatialWindow.maxSize, temporalWindow.maxSize, reps.mc, 
                           pVal_threshold = 0.05, distanceMatrix=NULL,
                           verbose=FALSE, maxCPUs=detectCores()-1){
   
@@ -73,7 +62,8 @@ run_GscanStat <- function(data, W, spatialWindow.maxSize, temporalWindow.maxSize
     distanceMatrix <- as_Spatial(carto) %>%
       coordinates() %>%
       as.matrix %>%
-      spDists(x = ., y = ., longlat = FALSE)
+      spDists(x = ., y = .)
+      #spDists(x = ., y = ., longlat = FALSE)
   }
   
   # Obtaining the list with the most-likely cluster for each area i at time t (A_it)
@@ -501,7 +491,7 @@ mcTest.logLambda.poisson_Parallel <- function(data,
 
                 }
         })
-        cat("MonteCarlo total processing time: ", tiempo['elapsed']/60," min\n")
+        cat("\nMonteCarlo total processing time: ", tiempo['elapsed']/60," min\n")
         return(lambdaDist)
 }
 
