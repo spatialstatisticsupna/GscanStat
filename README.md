@@ -57,7 +57,8 @@ Additional scripts:
 
 This work has been supported by project PID2020-113125RB-I00/MCIN/AEI/10.13039/501100011033 (Spanish Ministry of Science and Innovation, AEI).
 
-![plot](https://github.com/spatialstatisticsupna/GscanStat/tree/main/miciu-aei.png)
+![plot](https://github.com/spatialstatisticsupna/GscanStat/blob/main/miciu-aei.png)
+
 
 # References
 
