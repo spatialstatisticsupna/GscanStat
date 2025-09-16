@@ -9,7 +9,7 @@ This repository contains the R code for implementing the GscanStat clustering al
 -   [Acknowledgements](#Acknowledgements)
 -   [References](#References)
 
-# Data {#data}
+# Data
 
 Overall cancer (all sites) mortality data for the male population in continental Spain (excluding the Balearic and Canary Islands) are provided. The data are aggregated into 3-year periods spanning 1999–2022 (i.e., 1999–2001, 2002–2004, …, 2020–2022).
 
@@ -29,7 +29,7 @@ This .Rdata file contains the following objects:
     -   `exp`: expected number of cancer deaths (calculated using internal age-standardization)
     -   `pop`: population at risk
 
-# R code {#r-code}
+# R code
 
 [Here](https://github.com/spatialstatisticsupna/GscanStat/tree/main/R) we provide R code to fit the following spatio-temporal models:
 
@@ -53,13 +53,13 @@ Additional scripts:
 
 -   [SaTScan_auxFunctions.R](https://github.com/spatialstatisticsupna/GscanStat/tree/main/R/SaTScan_auxFunctions.R) provides auxiliary functions to running the SaTScan software via the `rsatscan` package.
 
-# Acknowledgements {#acknowledgements}
+# Acknowledgements
 
 This work has been supported by project PID2020-113125RB-I00/MCIN/AEI/10.13039/501100011033 (Spanish Ministry of Science and Innovation, AEI).
 
 ![plot](https://github.com/spatialstatisticsupna/GscanStat/tree/main/miciu-aei.png)
 
-# References {#references}
+# References
 
 [Kulldorff, M (2001). Prospective time-periodic geographical disease surveillance using a scan statistic. *Journal of the Royal Statistical Society: Series A (Statistics in Society)*, 164, 61-72.](https://www.jstor.org/stable/pdf/2680534)
 
