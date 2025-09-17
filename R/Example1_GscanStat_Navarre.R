@@ -91,14 +91,15 @@ tm_shape(carto.aux) +
 ###############################
 ## Run the SaTScan algorithm ##
 ###############################
-source("./SaTScan_auxFunctions.R")
+source("./satScan_auxFunctions.R")
 
 # NOTE: To use SaTScan, you need to install not only the 'rsatscan' R package 
 #       but also the SaTScan software itself (https://www.satscan.org/download.html)
 
 satScan_output <- run_satScan(data=data.NAV |> mutate(year=year+2000), # To ensure compatibility with SaTScan,
                               carto=carto.NAV,
-                              sslocation="C:/Program Files/SaTScan/")
+                              sslocation="C:/Program Files/SaTScan/", # SaTScan path on the system
+                              ssbatchfilename= "SaTScanBatch64") # SaTScan executable file on the system
 print(satScan_output)
 
 clusters_satScan <- get_clusterIDs_satScan(satScan_output, carto=carto.NAV, pVal.threshold=0.05)

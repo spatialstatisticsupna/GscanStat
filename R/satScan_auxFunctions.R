@@ -22,8 +22,12 @@
 #'       municipality and year.
 #'   }
 #' @param carto An object containing the cartographic information (e.g.,
-#'   municipality coordinates and polygons) required by SaTScan.
-#'
+#'  municipality coordinates and polygons) required by SaTScan.
+#' @param sslocation SatScan installation path on your system. Default 
+#'  values are 'C:/Program Files/SaTScan' for Windows and '/usr/local/bin' for 
+#'  Linux systems.
+#' @param ssbatchfilename Name of the SatScan executable on your system.   
+#'   
 #' @return An object with the SaTScan output as provided by function `satscan`
 #' from the `rsatscan` package.
 #'
@@ -40,6 +44,28 @@
 #' # run_SatScan(data = my_data, carto = my_carto)
 run_satScan <- function(data, carto, sslocation=NULL, ssbatchfilename=NULL) {
   
+  ## default values for SaTScan installation
+  sysname <- Sys.info()["sysname"]
+  if(is.null(sslocation)){
+    sslocation <- switch(sysname,
+                         "Windows" = "C:/Program Files/SaTScan",
+                         "Linux"   = "/usr/local/bin")
+  } 
+  if(is.null(ssbatchfilename)){
+    ssbatchfilename <- switch(sysname,
+                              "Windows" = "SaTScanBatch64",
+                              "Linux" = "satscan64")
+  }
+  # Checking SatScan installation
+  satscan.file <- file.path(sslocation,ssbatchfilename)
+  if(file.exists(satscan.file)){
+    message("Using SaTScan version: ",
+            system2(satscan.file, args=" --version", stdout = TRUE, stderr = TRUE))
+  } else {
+    stop("Invalid SatScan executable. Please use the 'sslocation' and 'ssbatchfilename' parameters to specify the SatScan installation on your system.")
+  }
+  
+  
   carto <- st_as_sf(carto)
   
   # We transform the projection of the object to obtain lon/lat
@@ -52,14 +78,14 @@ run_satScan <- function(data, carto, sslocation=NULL, ssbatchfilename=NULL) {
   data.geo <- data.frame(ID=carto$ID, lat=carto$lat, long=carto$long)
   data.cas <- data %>% select(ID,obs,year)
   data.pop <- data %>% select(ID,year,pop)
-
+  
   td = tempfile(pattern = "auxDir_satScan", tmpdir = "./")
   dir.create(td, recursive = TRUE)
-
+  
   write.cas(data.cas,td,"auxSaTScanFile")
   write.geo(data.geo,td,"auxSaTScanFile")
   write.pop(data.pop,td,"auxSaTScanFile")
-
+  
   # write options
   # If the error "Error in ss.options(reset = TRUE) : object 'ssenv' not found" occurs, it means that
   # the environment variable 'ssenv' created when loading rsatscan has been deleted.
@@ -68,10 +94,10 @@ run_satScan <- function(data, carto, sslocation=NULL, ssbatchfilename=NULL) {
     detach("package:rsatscan", unload = TRUE)
     library(rsatscan)
   }
-
-
+  
+  
   years <- sort(unique(data.cas$year))
-
+  
   invisible(ss.options(reset=TRUE))
   ss.options(list(CaseFile="auxSaTScanFile.cas",
                   StartDate=paste0(years[1],"/01/01"),
@@ -84,23 +110,20 @@ run_satScan <- function(data, carto, sslocation=NULL, ssbatchfilename=NULL) {
                   MaxSpatialSizeInPopulationAtRisk=50, # max spatial size 50% of population at risk (default and maximum allowed value)
                   MaxTemporalSizeInterpretation=0,
                   MaxTemporalSize=90 # temporal size % of time periods (max allowed 90%)
-                  ))
+  ))
   ss.options(c("NonCompactnessPenalty=0", "ReportGiniClusters=n", "LogRunToHistoryFile=n"))
-
+  
   write.ss.prm(td,"auxSatScanFile")
   
-  if(is.null(sslocation)) sslocation <- "/usr/local/bin/"
-  if(is.null(ssbatchfilename)) ssbatchfilename <- "SaTScanBatch64"
-
   satScan_obj <- satscan(prmlocation=td,
                          prmfilename="auxSatScanFile",
                          sslocation=sslocation,
-                         ssbatchfilename="SaTScanBatch64",
+                         ssbatchfilename=ssbatchfilename,
                          verbose=FALSE)
-
+  
   ## delete the temporary directory
   unlink(td, recursive = TRUE)
-
+  
   return(satScan_obj)
 }
 
@@ -133,20 +156,20 @@ run_satScan <- function(data, carto, sslocation=NULL, ssbatchfilename=NULL) {
 get_clusterIDs_satScan <- function(satScanOutput, carto, pVal.threshold=0.05){
   
   # compute the number of areas (spatial dimension)
-    nAreas <- nrow(satScanOutput$rr)  
-    # compute the number of years (temporal dimension)
-    # Extract dates
-    start_date <- sub("StartDate=", "", satScan_output$prm[grepl("^StartDate=", satScan_output$prm)])
-    end_date   <- sub("EndDate=", "",   satScan_output$prm[grepl("^EndDate=",   satScan_output$prm)])
-    # Convert to Date
-    start_date <- as.Date(start_date)
-    end_date   <- as.Date(end_date)
-    # Compute number of years
-    nYears <- as.numeric(format(end_date, "%Y")) - as.numeric(format(start_date, "%Y")) + 1
+  nAreas <- nrow(satScanOutput$rr)  
+  # compute the number of years (temporal dimension)
+  # Extract dates
+  start_date <- sub("StartDate=", "", satScan_output$prm[grepl("^StartDate=", satScan_output$prm)])
+  end_date   <- sub("EndDate=", "",   satScan_output$prm[grepl("^EndDate=",   satScan_output$prm)])
+  # Convert to Date
+  start_date <- as.Date(start_date)
+  end_date   <- as.Date(end_date)
+  # Compute number of years
+  nYears <- as.numeric(format(end_date, "%Y")) - as.numeric(format(start_date, "%Y")) + 1
   
-    nClust <- length(unique(satScanOutput$gis$CLUSTER))
+  nClust <- length(unique(satScanOutput$gis$CLUSTER))
   
- 
+  
   # getting the time frame for each cluster
   time_frame_lines <- satScan_output$main[grep("^\\s*Time frame", satScan_output$main)]
   # getting the dates
@@ -163,7 +186,7 @@ get_clusterIDs_satScan <- function(satScanOutput, carto, pVal.threshold=0.05){
   
   spatialCluster <-
     satScanOutput$gis %>% mutate(LOC_ID=as.numeric(as.character(LOC_ID))) %>% select(LOC_ID, CLUSTER)
-
+  
   # include cluster duration information
   cluster_duration <- merge(spatialCluster, years_last_digit, by = "CLUSTER", all.x = TRUE)
   
@@ -182,8 +205,8 @@ get_clusterIDs_satScan <- function(satScanOutput, carto, pVal.threshold=0.05){
     clustering_IDMatrix_satScan <- cbind(clustering_IDMatrix_satScan, aux_clusteringPartition)
   }
   colnames(clustering_IDMatrix_satScan) <- paste0("C",1:nClust)
-# coercing to data.frame
-    clusters <- as.data.frame(clustering_IDMatrix_satScan) %>%
+  # coercing to data.frame
+  clusters <- as.data.frame(clustering_IDMatrix_satScan) %>%
     dplyr::mutate(across(everything(), as.factor))
   
   return(clusters)
