@@ -6,8 +6,8 @@ This repository contains the R code for implementing the GscanStat clustering al
 
 -   [Data](#data)
 -   [R code](#r-code)
--   [Acknowledgements](#Acknowledgements)
--   [References](#References)
+-   [Acknowledgements](#acknowledgements)
+-   [References](#references)
 
 # Data
 
@@ -51,8 +51,8 @@ Additional scripts:
 
 -   [GscanStat_parallelClusteringAlgorithm.R](https://github.com/spatialstatisticsupna/GscanStat/tree/main/R/GscanStat_parallelClusteringAlgorithm.R) contains the functions needed to run the Greedy Scan Statistics (GscanStat) algorithm for cluster detection.
 
--   [SaTScan_auxFunctions.R](https://github.com/spatialstatisticsupna/GscanStat/tree/main/R/SaTScan_auxFunctions.R) provides auxiliary functions to running the SaTScan software via the `rsatscan` package.
-
+-   [SaTScan_auxFunctions.R](https://github.com/spatialstatisticsupna/GscanStat/tree/main/R/SaTScan_auxFunctions.R) provides auxiliary functions to running the SaTScan software via the `rsatscan` package, which requires both the package itself and the standalone SaTScan software (<https://www.satscan.org/download.html>).
+    
 # Acknowledgements
 
 This work has been supported by project PID2020-113125RB-I00/MCIN/AEI/10.13039/501100011033 (Spanish Ministry of Science, Innovation and Universities, AEI).
