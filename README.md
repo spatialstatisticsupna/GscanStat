@@ -37,7 +37,7 @@ This .Rdata file contains the following objects:
 
 -   GscanStat model (Santafé et al., 2025)
 
-The [`bigDM`](https://github.com/spatialstatisticsupna/bigDM) package is used to fit local spatio-temporal models through a divide-and-conquer strategy (Orozco-Acosta et al., 2023), incorporating the significant risk clustering structure identified by the GscanStat algorithm. Version 0.5.7 of `bigDM` has been developed specifically for this purpose.
+The [`bigDM`](https://github.com/spatialstatisticsupna/bigDM) package is used to fit local spatio-temporal models through a divide-and-conquer strategy (Orozco-Acosta et al., 2023), incorporating the significant risk clustering structure identified by the GscanStat algorithm. Version 0.5.7 of `bigDM` has been developed specifically for this purpose. All models were fitted using the R-INLA stable version 25.06.07 on R-4.5.1.
 
 Two examples are provided:
 
