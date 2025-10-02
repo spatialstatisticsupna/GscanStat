@@ -1,6 +1,6 @@
 # Greedy Scan Statistic (GscanStat) algorithm
 
-This repository contains the R code for implementing the GscanStat clustering algorithm and reproducing the results from the case study described in the paper *“Improving Disease Risk Estimation in Small Areas by Accounting for Spatio-Temporal Local Discontinuities”* (Santafé et al., 2025).
+This repository contains the R code for implementing the GscanStat clustering algorithm and reproducing the results from the case study described in the paper *“Improving Disease Risk Estimation in Small Areas by Accounting for Spatio-Temporal Local Discontinuities”* [(Santafé et al., 2025)](https://arxiv.org/abs/2509.19889).
 
 ## Table of Contents
 
@@ -66,4 +66,4 @@ This work has been supported by project PID2020-113125RB-I00/MCIN/AEI/10.13039/5
 
 [Orozco-Acosta, E., Adin, A., and Ugarte, M.D. (2023). Big problems in spatio-temporal disease mapping: methods and software. *Computer Methods and Programs in Biomedicine*, 231, 107403.](https://doi.org/10.1016/j.cmpb.2023.107403)
 
-Santafé, G., Adin, A., and Ugarte, M.D. (2025). Improving Disease Risk Estimation in Small Areas by Accounting for Spatio-Temporal Local Discontinuities. *arXiv preprint*.
+[Santafé, G., Adin, A., and Ugarte, M.D. (2025). Improving Disease Risk Estimation in Small Areas by Accounting for Spatio-Temporal Local Discontinuities. *arXiv preprint*.](https://arxiv.org/abs/2509.19889)
