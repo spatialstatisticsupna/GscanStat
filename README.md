@@ -51,7 +51,7 @@ Additional scripts:
 
 -   [GscanStat_parallelClusteringAlgorithm.R](https://github.com/spatialstatisticsupna/GscanStat/tree/main/R/GscanStat_parallelClusteringAlgorithm.R) contains the functions needed to run the Greedy Scan Statistics (GscanStat) algorithm for cluster detection.
 
--   [SaTScan_auxFunctions.R](https://github.com/spatialstatisticsupna/GscanStat/tree/main/R/saTScan_auxFunctions.R) provides auxiliary functions to running the SaTScan software via the `rsatscan` package, which requires both the package itself and the standalone SaTScan software (<https://www.satscan.org/download.html>).
+-   [satScan_auxFunctions.R](https://github.com/spatialstatisticsupna/GscanStat/tree/main/R/satScan_auxFunctions.R) provides auxiliary functions to running the SaTScan software via the `rsatscan` package, which requires both the package itself and the standalone SaTScan software (<https://www.satscan.org/download.html>).
     
 # Acknowledgements
 
