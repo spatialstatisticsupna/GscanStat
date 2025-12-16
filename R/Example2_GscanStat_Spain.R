@@ -4,6 +4,7 @@ library(data.table)
 library(dplyr)
 library(doParallel)
 library(foreach)
+library(ggplot2)
 library(gridExtra)
 library(INLA)
 library(parallel)
@@ -110,30 +111,51 @@ model_noCluster <- STCAR_INLA(carto=carto, data=data,
                               inla.mode="compact", compute.fitted.values=TRUE)
 
 ## Model including the clustering structure obtained through the GscanStat algorithm
-model_GscanStat <- STCAR_INLA(carto=carto, data=data,
-                              ID.area="ID", ID.year="year", O="obs", E="exp",
-                              X=clusters_GscanStat,
-                              ID.group="CCAA", model="partition", k=1,
-                              spatial="BYM2", temporal="rw1", interaction="TypeIV",
-                              inla.mode="compact", compute.fitted.values=TRUE)
+model_GscanStat1 <- STCAR_INLA(carto=carto, data=data,
+                               ID.area="ID", ID.year="year", O="obs", E="exp",
+                               X=clusters_GscanStat,
+                               ID.group="CCAA", model="partition", k=1,
+                               spatial="BYM2", temporal="rw1", interaction="TypeI",
+                               inla.mode="compact", compute.fitted.values=TRUE)
 
-model_GscanStat$summary.fixed
+model_GscanStat2 <- STCAR_INLA(carto=carto, data=data,
+                               ID.area="ID", ID.year="year", O="obs", E="exp",
+                               X=clusters_GscanStat,
+                               ID.group="CCAA", model="partition", k=1,
+                               spatial="BYM2", temporal="rw1", interaction="TypeII",
+                               inla.mode="compact", compute.fitted.values=TRUE)
+
+model_GscanStat3 <- STCAR_INLA(carto=carto, data=data,
+                               ID.area="ID", ID.year="year", O="obs", E="exp",
+                               X=clusters_GscanStat,
+                               ID.group="CCAA", model="partition", k=1,
+                               spatial="BYM2", temporal="rw1", interaction="TypeIII",
+                               inla.mode="compact", compute.fitted.values=TRUE)
+
+model_GscanStat4 <- STCAR_INLA(carto=carto, data=data,
+                               ID.area="ID", ID.year="year", O="obs", E="exp",
+                               X=clusters_GscanStat,
+                               ID.group="CCAA", model="partition", k=1,
+                               spatial="BYM2", temporal="rw1", interaction="TypeIV",
+                               inla.mode="compact", compute.fitted.values=TRUE)
 
 
 ######################################
 ## Compute model selection criteria ##
 ######################################
-compute.MSC <- function(model){
-  data.frame(deviance=model$dic$mean.deviance,
-             pD=model$dic$p.eff,
-             DIC=model$dic$dic,
-             WAIC=model$waic$waic)
-}
-
 MODELS <- list('noCluster'=model_noCluster,
-               'GscanStat'=model_GscanStat)
+               'GscanStat.TypeI'=model_GscanStat1,
+               'GscanStat.TypeII'=model_GscanStat2,
+               'GscanStat.TypeIII'=model_GscanStat3,
+               'GscanStat.TypeIV'=model_GscanStat4)
 
-do.call(rbind,lapply(MODELS, compute.MSC))
+aux <- lapply(MODELS, function(x){
+  data.frame(mean.deviance=x$dic$mean.deviance,
+             pD=x$dic$p.eff,
+             DIC=x$dic$dic,
+             WAIC=x$waic$waic)
+})
+do.call(rbind,aux)
 
 
 ##########################################################
@@ -167,7 +189,7 @@ print(Map.noCluster)
 
 ## GscanStat model
 ####################
-model_GscanStat.RR <- matrix(model_GscanStat$summary.fitted.values$`0.5quant`,
+model_GscanStat.RR <- matrix(model_GscanStat4$summary.fitted.values$`0.5quant`,
                              nAreas, nYears, byrow=F)
 colnames(model_GscanStat.RR) <- time.periods
 
@@ -184,3 +206,34 @@ Map.GscanStat <- tm_shape(carto.GscanStat) +
   tm_facets(nrow=3, ncol=3)
 
 print(Map.GscanStat)
+
+
+################################
+## Compute posterior patterns ##
+################################
+log.risks <- matrix(model_GscanStat4$summary.linear.predictor$`0.5quant`,nAreas,nYears,byrow=F)
+
+alpha <- mean(log.risks)
+xi <- apply(log.risks,1,mean)-alpha
+gamma <- apply(log.risks,2,mean)-alpha
+delta <- log.risks-matrix(xi,nAreas,nYears,byrow=F)-matrix(gamma,nAreas,nYears,byrow=T)-alpha
+
+
+## Plot of the temporal pattern ##
+df <- data.frame(year=factor(c("1999-2001","2002-2004","2005-2007","2008-2010",
+                               "2011-2013","2014-2016","2017-2019","2020-2022"),
+                             levels = c("1999-2001","2002-2004","2005-2007","2008-2010",
+                                        "2011-2013","2014-2016","2017-2019","2020-2022")),
+                 risk = exp(gamma))
+
+ggplot(df, aes(x=year, y=risk, group=1)) +
+  geom_line(col="blue") +
+  geom_hline(yintercept = 1, linetype = "dashed") +
+  labs(title="Temporal pattern", x="", y="") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle=45, hjust=1),
+        plot.title = element_text(hjust=0.5))
+
+
+## Average reduction in relative risk over the study period
+1-exp(gamma[nYears])/exp(gamma[1])
