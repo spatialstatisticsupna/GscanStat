@@ -62,4 +62,4 @@ This work has been supported by project PID2020-113125RB-I00/MCIN/AEI/10.13039/5
 
 # References
 
-[Santafé, G., Adin, A., and Ugarte, M.D. (2026). Improving Disease Risk Estimation in Small Areas by Accounting for Spatio-Temporal Local Discontinuities. *Journal of Computational and Graphical Statistics*, 1-12.](https://doi.org/10.1080/10618600.2026.2652930)
+[Santafé, G., Adin, A., and Ugarte, M.D. (2026). Improving Disease Risk Estimation in Small Areas by Accounting for Spatio-Temporal Local Discontinuities. *Journal of Computational and Graphical Statistics*, 1-12, https://doi.org/10.1080/10618600.2026.2652930](https://doi.org/10.1080/10618600.2026.2652930)
