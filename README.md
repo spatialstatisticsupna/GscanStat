@@ -62,8 +62,4 @@ This work has been supported by project PID2020-113125RB-I00/MCIN/AEI/10.13039/5
 
 # References
 
-[Kulldorff, M (2001). Prospective time-periodic geographical disease surveillance using a scan statistic. *Journal of the Royal Statistical Society: Series A (Statistics in Society)*, 164, 61-72.](https://www.jstor.org/stable/pdf/2680534)
-
-[Orozco-Acosta, E., Adin, A., and Ugarte, M.D. (2023). Big problems in spatio-temporal disease mapping: methods and software. *Computer Methods and Programs in Biomedicine*, 231, 107403.](https://doi.org/10.1016/j.cmpb.2023.107403)
-
-[Santafé, G., Adin, A., and Ugarte, M.D. (2026). Improving Disease Risk Estimation in Small Areas by Accounting for Spatio-Temporal Local Discontinuities. *Journal of Computational and Graphical Statistics*, online first.](https://doi.org/10.1080/10618600.2026.2652930)
+[Santafé, G., Adin, A., and Ugarte, M.D. (2026). Improving Disease Risk Estimation in Small Areas by Accounting for Spatio-Temporal Local Discontinuities. *Journal of Computational and Graphical Statistics*, 1-12.](https://doi.org/10.1080/10618600.2026.2652930)
